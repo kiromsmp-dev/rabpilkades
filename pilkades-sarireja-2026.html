@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Transparansi RAB Pilkades Desa Sarireja 2026</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;700;800&display=swap">
+<style>
+:root{--bg:#fbfbfd;--card:#fff;--ink:#1c1b2e;--mute:#63627a;--line:#e3e2ee;--accent:#3b2e8a;--soft:#eeecf9;
+--c0:#3b2e8a;--c1:#0f766e;--c2:#b45309;--c3:#be185d;--c4:#2563eb;--c5:#65a30d;--c6:#7c3aed;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12111c;--card:#1a1928;--ink:#ecebf7;--mute:#a3a2bb;--line:#2e2c44;--accent:#a99cff;--soft:#26243d}}
+:root[data-theme="dark"]{--bg:#12111c;--card:#1a1928;--ink:#ecebf7;--mute:#a3a2bb;--line:#2e2c44;--accent:#a99cff;--soft:#26243d}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 "Public Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.w{max-width:980px;margin:0 auto;padding:28px 18px 60px}
+h1{font-size:clamp(1.5rem,4vw,2.1rem);line-height:1.2;margin:0 0 6px;font-weight:800}
+.sub{color:var(--mute);margin:0 0 28px}
+.total{font-size:clamp(2.4rem,9vw,4.2rem);font-weight:800;letter-spacing:-.02em;color:var(--accent);line-height:1.05}
+.lbl{color:var(--mute);font-size:.9rem}
+.bar{display:flex;height:22px;border-radius:6px;overflow:hidden;margin:18px 0 6px;background:var(--line)}
+.bar button{border:0;padding:0;cursor:pointer;min-width:3px;transition:opacity .15s}
+.bar button:not(.on){opacity:.85}
+.cats{list-style:none;margin:16px 0 34px;padding:0;display:grid;gap:2px}
+.cats button{all:unset;box-sizing:border-box;display:grid;grid-template-columns:14px 1fr auto 52px;gap:10px;align-items:center;width:100%;padding:10px 8px;border-radius:8px;cursor:pointer}
+.cats button:hover,.cats button.on{background:var(--soft)}
+.cats button:focus-visible,.bar button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.dot{width:12px;height:12px;border-radius:3px}
+.cats b{font-weight:700}.cats .p{color:var(--mute);text-align:right;font-size:.9rem}
+.tools{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+input{flex:1;min-width:200px;padding:11px 14px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);font:inherit}
+.reset{all:unset;cursor:pointer;color:var(--accent);font-weight:700;padding:8px}
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--card)}
+table{border-collapse:collapse;width:100%;min-width:640px;font-size:.92rem}
+th{text-align:left;color:var(--mute);font-weight:500;padding:10px 12px;border-bottom:1px solid var(--line)}
+td{padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+.n{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+tr.g td{background:var(--soft);font-weight:700}
+tr.g td.n{color:var(--accent)}
+tfoot td{font-weight:800;border:0}
+.note{color:var(--mute);font-size:.85rem;margin-top:26px}
+.empty{padding:28px;text-align:center;color:var(--mute)}
+</style>
+</head>
+<body>
+<main class="w">
+<h1>Rencana Anggaran Pemilihan Kepala Desa Serentak 2026</h1>
+<p class="sub">Desa Sarireja, Kecamatan Jalancagak, Kabupaten Subang. Dokumen terbuka untuk dipantau warga.</p>
+<div class="lbl">Total anggaran</div>
+<div class="total" id="tot"></div>
+<div class="lbl" id="cnt"></div>
+<div class="bar" id="bar" role="group" aria-label="Komposisi anggaran, klik untuk memfilter"></div>
+<ul class="cats" id="cats"></ul>
+<div class="tools">
+<input id="q" type="search" placeholder="Cari rincian, mis. snack, tenda, surat suara" aria-label="Cari rincian anggaran">
+<button class="reset" id="rs" hidden>Tampilkan semua</button>
+</div>
+<div class="tw"><table>
+<thead><tr><th>Uraian</th><th class="n">Volume</th><th class="n">Harga satuan</th><th class="n">Jumlah</th></tr></thead>
+<tbody id="tb"></tbody>
+<tfoot><tr><td colspan="3">Jumlah ditampilkan</td><td class="n" id="ft"></td></tr></tfoot>
+</table></div>
+<p class="note">Sumber: RAB yang disusun Panitia Pemilihan Kepala Desa Sarireja. Jumlah dihitung ulang dari seluruh butir rincian. Ada pertanyaan atau temuan? Sampaikan ke panitia atau BPD Desa Sarireja.</p>
+</main>
+<script>
+const D=[[0, "Honor Pengawas", "Honor Pengawas 5 Orang x 4 bulan", 20, "OB", 1000000, 0, 20000000], [0, "Panitia Pemilihan (Inti)", "Ketua (1 org x 4 bulan)", 4, "OB", 1400000, 0, 5600000], [0, "Panitia Pemilihan (Inti)", "Wakil Ketua (1 org x 4 bulan)", 4, "OB", 1200000, 0, 4800000], [0, "Panitia Pemilihan (Inti)", "Sekretaris (1 org x 4 bulan)", 4, "OB", 1100000, 0, 4400000], [0, "Panitia Pemilihan (Inti)", "Bendahara (1 org x 4 bulan)", 4, "OB", 1000000, 0, 4000000], [0, "Panitia Pemilihan (Inti)", "Anggota ( 1 org x 4 bulan)", 4, "OB", 900000, 0, 3600000], [0, "Panitia Pemilihan (Inti)", "Anggota ( 1 org x 4 bulan)", 4, "OB", 900000, 0, 3600000], [0, "Panitia Pemilihan (Inti)", "Anggota ( 1 org x 4 bulan)", 4, "OB", 900000, 0, 3600000], [0, "Panitia Pemilihan (Inti)", "Anggota ( 1 org x 4 bulan)", 4, "OB", 900000, 0, 3600000], [0, "Panitia Pemilihan (Inti)", "Anggota ( 1 org x 4 bulan)", 4, "OB", 900000, 0, 3600000], [0, "Panitia Pemilihan (Inti)", "Anggota ( 1 org x 4 bulan)", 4, "OB", 900000, 0, 3600000], [0, "Panitia Pemilihan (Inti)", "Anggota ( 1 org x 4 bulan)", 4, "OB", 900000, 0, 3600000], [0, "Uang Harian Panitia Tambahan (Untuk 3 TPS )", "Panitia Tambahan ( 15 X 9 HOK)", 9, "OH", 75000, 0, 675000], [0, "Uang Harian Panitia Tambahan (Untuk 3 TPS )", "Pamsung (Dalam) ( 6 X 3 HOK )", 3, "OH", 75000, 0, 225000], [0, "Uang Harian Panitia Tambahan (Untuk 3 TPS )", "Pamsung (Luar) (6 X 3 HOK )", 3, "OH", 75000, 0, 225000], [0, "Uang Transport Panitia Tambahan (Untuk 3 TPS )", "Transport Panitia Tambahan", 27, "OH", 25000, 0, 675000], [1, "Pembuatan 3 TPS", "Dekorasi", 4, "unit", 750000, 0, 3000000], [1, "Pembuatan 3 TPS", "Belanja sewa Tenda ( ukuran 4 x 10 ) x 4 unit", 3, "unit", 700000, 0, 2100000], [1, "Pembuatan 3 TPS", "Kaso 3 m", 40, "Batang", 15000, 0, 600000], [1, "Pembuatan 3 TPS", "Multiblok 3ml", 4, "Lmbr", 240000, 0, 960000], [1, "Pembuatan 3 TPS", "Kunci", 4, "set", 25000, 0, 100000], [1, "Pembuatan 3 TPS", "Benang rapia besar", 4, "Rol", 25000, 0, 100000], [1, "Pembuatan 3 TPS", "Paku 5", 6, "Kg", 13000, 0, 78000], [1, "Pembuatan 3 TPS", "Paku 7", 6, "Kg", 16500, 0, 99000], [1, "Pembuatan 3 TPS", "Sewa Meja (1 TPS 9 Meja x 3 TPS)", 27, "buah", 5000, 0, 135000], [1, "Pembuatan 3 TPS", "Sewa Kursi (1 TPS 50 Kursix 3 TPS)", 150, "buah", 3000, 0, 450000], [1, "Pembuatan 3 TPS", "Sewa Panggung + Genset", 1, "Set", 3500000, 0, 3500000], [1, "Pembuatan 3 TPS", "Sewa Sound System 1000 WATT", 1, "Set", 1500000, 0, 1500000], [1, "Pembuatan 3 TPS", "pagar Bambu", 10, "buah", 22000, 0, 220000], [1, "Pembuatan 3 TPS", "Tali Kawat", 4, "Kg", 25000, 0, 100000], [1, "Pembuatan 3 TPS", "Bambu", 25, "batang", 15000, 0, 375000], [2, "Pengadaan & Perlengkapan Pilkades", "Cetak surat suara", 3012, "Lmbr", 3000, 0, 9036000], [2, "Pengadaan & Perlengkapan Pilkades", "Cadangan Surat Suara ( 5%)", 150, "Lmbr", 3000, 0, 450000], [2, "Pengadaan & Perlengkapan Pilkades", "Surat undangan", 3012, "Lmbr", 1000, 0, 3012000], [2, "Pengadaan & Perlengkapan Pilkades", "Cetak Baligho", 3, "buah", 200000, 0, 600000], [2, "Pengadaan & Perlengkapan Pilkades", "Kotak Suara", 3, "buah", 200000, 0, 600000], [2, "Pengadaan & Perlengkapan Pilkades", "Bilik Suara", 8, "buah", 130000, 0, 1040000], [2, "Pengadaan & Perlengkapan Pilkades", "Formulir Penyelenggaraan Pemilihan (plano, sertifikat, BA dll", 3, "Paket", 250000, 0, 750000], [2, "Pengadaan & Perlengkapan Pilkades", "Amplop surat suara", 18, "Paket", 15000, 0, 270000], [2, "Pengadaan & Perlengkapan Pilkades", "Amplop BA", 20, "Paket", 5000, 0, 100000], [2, "Pengadaan & Perlengkapan Pilkades", "Segel", 10, "buah", 300, 0, 3000], [2, "Pengadaan & Perlengkapan Pilkades", "Plastik Polos Besar", 3, "buah", 7000, 0, 21000], [2, "Pengadaan & Perlengkapan Pilkades", "Bantalan Pencoblosan (Busa)", 7, "buah", 10000, 0, 70000], [2, "Pengadaan & Perlengkapan Pilkades", "Tinta", 3, "buah", 15000, 0, 45000], [2, "Pengadaan & Perlengkapan Pilkades", "Bak Stempel", 3, "buah", 15000, 0, 45000], [2, "Pengadaan & Perlengkapan Pilkades", "Materai 10000", 11, "buah", 10000, 0, 110000], [2, "Pengadaan & Perlengkapan Pilkades", "Cetak Poster Pengumuman dan Foto Calon", 3, "buah", 100000, 0, 300000], [2, "Pengadaan & Perlengkapan Pilkades", "Spidol White Board", 6, "buah", 10000, 0, 60000], [2, "Pengadaan & Perlengkapan Pilkades", "Strapless + Isi", 6, "buah", 20000, 0, 120000], [2, "Pengadaan & Perlengkapan Pilkades", "Sewa Perangkat tablet Android dan aplikasi simulasi Pilkades digital", 2, "paket", 600000, 0, 1200000], [2, "Pengadaan & Perlengkapan Pilkades", "Sewa printer Termal", 1, "paket", 500000, 0, 500000], [2, "Pengadaan & Perlengkapan Pilkades", "Sewa Holder Tablet Android", 2, "paket", 200000, 0, 400000], [2, "Pengadaan & Perlengkapan Pilkades", "Sewa Genset", 1, "unit", 1500000, 0, 1500000], [3, "Konsumsi Sosialisasi Pendaftaran Balon", "Sewa Kendaraan Pick Up", 1, "Unit", 500000, 0, 500000], [3, "Konsumsi Sosialisasi Pendaftaran Balon", "Sewa Sound System", 1, "unit", 700000, 0, 700000], [3, "Konsumsi Sosialisasi Pendaftaran Balon", "Baligho Sosialisasi", 1, "Buah", 150000, 0, 150000], [3, "Konsumsi Sosialisasi Pendaftaran Balon", "Snack", 22, "dus", 15000, 0, 330000], [3, "Konsumsi Sosialisasi Pendaftaran Balon", "Makan", 1, "dus", 35000, 0, 35000], [3, "Konsumsi Sosialisasi Pendaftaran Balon", "Air Mineral", 2, "dus", 24000, 0, 48000], [3, "Konsumsi Sosialisasi ( 5 RW X 60 )", "Baligho Sosialisasi", 5, "buah", 150000, 0, 750000], [3, "Konsumsi Sosialisasi ( 5 RW X 60 )", "Snack", 55, "dus", 15000, 0, 825000], [3, "Konsumsi Sosialisasi ( 5 RW X 60 )", "Makan", 55, "dus", 35000, 0, 1925000], [3, "Konsumsi Sosialisasi ( 5 RW X 60 )", "Air Mineral", 5, "dus", 24000, 0, 120000], [3, "Konsumsi (Mamin) Persiapan", "Snack", 11, "dus", 15000, 0, 165000], [3, "Konsumsi (Mamin) Persiapan", "Makan", 11, "dus", 35000, 0, 385000], [3, "Konsumsi (Mamin) Persiapan", "Air Mineral", 2, "dus", 24000, 0, 48000], [3, "Konsumsi (Mamin) Penjaringan Panitia Inti", "Snack", 11, "dus", 15000, 0, 165000], [3, "Konsumsi (Mamin) Penjaringan Panitia Inti", "Makan", 11, "dus", 35000, 0, 385000], [3, "Konsumsi (Mamin) Penjaringan Panitia Inti", "Air Mineral", 2, "dus", 24000, 0, 48000], [3, "Konsumsi (Mamin) Pelantikan Panitia Inti", "Snack", 21, "dus", 15000, 0, 315000], [3, "Konsumsi (Mamin) Pelantikan Panitia Inti", "Makan", 21, "dus", 35000, 0, 735000], [3, "Konsumsi (Mamin) Pelantikan Panitia Inti", "Air Mineral", 5, "dus", 24000, 0, 120000], [3, "Konsumsi (Mamin) Pelantikan Panitia Tambahan", "Snack", 39, "dus", 15000, 0, 585000], [3, "Konsumsi (Mamin) Pelantikan Panitia Tambahan", "Makan", 39, "dus", 35000, 0, 1365000], [3, "Konsumsi (Mamin) Pelantikan Panitia Tambahan", "Air Mineral", 6, "dus", 24000, 0, 144000], [3, "Konsumsi Rapat Koordinasi Dan Uang Saku Bimtek Panitia", "Uang saku Bimtek panitia tambahan", 15, "Op", 75000, 0, 1125000], [3, "Konsumsi Rapat Koordinasi Dan Uang Saku Bimtek Panitia", "Uang saku Bimtek panitia inti dan Panwas", 16, "Op", 75000, 0, 1200000], [3, "Konsumsi Rapat Koordinasi Dan Uang Saku Bimtek Panitia", "Snack", 31, "dus", 15000, 0, 465000], [3, "Konsumsi Rapat Koordinasi Dan Uang Saku Bimtek Panitia", "Makan", 31, "dus", 35000, 0, 1085000], [3, "Konsumsi Rapat Koordinasi Dan Uang Saku Bimtek Panitia", "Air Mineral", 6, "dus", 24000, 0, 144000], [3, "Konsumsi (Mamin) Penetapan DPS", "Snack", 17, "dus", 15000, 0, 255000], [3, "Konsumsi (Mamin) Penetapan DPS", "Makan", 17, "dus", 35000, 0, 595000], [3, "Konsumsi (Mamin) Penetapan DPS", "Air Mineral", 2, "dus", 24000, 0, 48000], [3, "Konsumsi (Mamin) Petugas Pelaksanaan Pantarlih", "Snack", 19, "dus", 15000, 0, 285000], [3, "Konsumsi (Mamin) Petugas Pelaksanaan Pantarlih", "Makan", 19, "dus", 35000, 0, 665000], [3, "Konsumsi (Mamin) Petugas Pelaksanaan Pantarlih", "Air Mineral", 5, "dus", 24000, 0, 120000], [3, "Konsumsi (Mamin) Penetapan DPT", "Snack", 17, "dus", 15000, 0, 255000], [3, "Konsumsi (Mamin) Penetapan DPT", "Makan", 17, "dus", 35000, 0, 595000], [3, "Konsumsi (Mamin) Penetapan DPT", "Air Mineral", 2, "dus", 24000, 0, 48000], [3, "Konsumsi (Mamin) Kampanye", "Snack", 68, "dus", 15000, 0, 1020000], [3, "Konsumsi (Mamin) Kampanye", "Makan", 68, "dus", 35000, 0, 2380000], [3, "Konsumsi (Mamin) Kampanye", "Air Mineral", 7, "dus", 24000, 0, 168000], [3, "Konsumsi (Mamin) Kampanye", "Sewa Kendaraan pick up (1 Unit x 2 H)", 1, "unit", 500000, 0, 500000], [3, "Konsumsi (Mamin) Kampanye", "Sewa Sound System (1 Set x 2 H )", 1, "set", 700000, 0, 700000], [3, "Konsumsi (Mamin) Deklarasi Damai", "Snack", 19, "dus", 15000, 0, 285000], [3, "Konsumsi (Mamin) Deklarasi Damai", "Makan", 19, "dus", 35000, 0, 665000], [3, "Konsumsi (Mamin) Deklarasi Damai", "Air Mineral", 10, "dus", 24000, 0, 240000], [3, "Konsumsi (Mamin) Deklarasi Damai", "Sewa Tenda", 1, "set", 700000, 0, 700000], [3, "Konsumsi (Mamin) Deklarasi Damai", "Sewa Kursi", 28, "buah", 500, 0, 14000], [3, "Konsumsi (Mamin) Deklarasi Damai", "Sewa Sound System", 1, "Set", 700000, 0, 700000], [3, "Konsumsi (Mamin) Pembuatan TPS", "Snack", 30, "dus", 15000, 0, 450000], [3, "Konsumsi (Mamin) Pembuatan TPS", "Makan", 30, "dus", 35000, 0, 1050000], [3, "Konsumsi (Mamin) Pembuatan TPS", "Air Mineral", 11, "dus", 24000, 0, 264000], [3, "Konsumsi (Mamin) Pelaksanaan Pencoblosan", "Snack", 30, "dus", 15000, 0, 450000], [3, "Konsumsi (Mamin) Pelaksanaan Pencoblosan", "Makan", 30, "dus", 35000, 0, 1050000], [3, "Konsumsi (Mamin) Pelaksanaan Pencoblosan", "Air Mineral", 11, "dus", 24000, 0, 264000], [4, "Belanja ATK Sekretariat", "HVS F4", 6, "Rim", 65000, 0, 390000], [4, "Belanja ATK Sekretariat", "Stempel", 1, "set", 100000, 0, 100000], [4, "Belanja ATK Sekretariat", "Tinta Stempel", 1, "Pcs", 20000, 0, 20000], [4, "Belanja ATK Sekretariat", "Lem Besar", 2, "Buah", 15000, 0, 30000], [4, "Belanja ATK Sekretariat", "Gunting Besar", 2, "Buah", 20000, 0, 40000], [4, "Belanja ATK Sekretariat", "Tipe x", 1, "Buah", 6000, 0, 6000], [4, "Belanja ATK Sekretariat", "Stabilo", 2, "Buah", 8000, 0, 16000], [4, "Belanja ATK Sekretariat", "Double tipe", 5, "Buah", 10000, 0, 50000], [4, "Belanja ATK Sekretariat", "Spidol Besar", 2, "buah", 9000, 0, 18000], [4, "Belanja ATK Sekretariat", "Spidol Kecil", 6, "buah", 3000, 0, 18000], [4, "Belanja ATK Sekretariat", "Penggaris 50 cm", 2, "Buah", 25000, 0, 50000], [4, "Belanja ATK Sekretariat", "Balpoint", 12, "Buah", 5000, 0, 60000], [4, "Belanja ATK Sekretariat", "Map biasa", 11, "Buah", 3000, 0, 33000], [4, "Belanja ATK Sekretariat", "Map Plastik", 6, "Buah", 5000, 0, 30000], [4, "Belanja ATK Sekretariat", "Amplop Besar", 1, "pak", 30000, 0, 30000], [4, "Belanja ATK Sekretariat", "Amplop Kecil", 2, "pak", 25000, 0, 50000], [4, "Belanja ATK Sekretariat", "Klip", 6, "pak", 25000, 0, 150000], [4, "Belanja ATK Sekretariat", "Tanda pengenal panitia", 12, "Buah", 25000, 0, 300000], [4, "Belanja ATK Sekretariat", "Photo Copy DPS dan DPT", 1170, "Lmbr", 300, 0, 351000], [4, "Belanja ATK Sekretariat", "Photo Copy Materi Bimtek KPPS", 275, "Lmbr", 300, 0, 82500], [4, "Belanja ATK Sekretariat", "Tinta Printer Epson", 3, "buah", 140000, 0, 420000], [4, "Belanja ATK Sekretariat", "Sewa laptop (2 unit x 4 bulan)", 2, "Buah", 600000, 0, 1200000], [4, "Belanja ATK Sekretariat", "Sewa Printer Epson L360", 1, "Bulan", 300000, 0, 300000], [4, "Belanja ATK Petugas Pantarlih", "Tas Map Plastik", 17, "Buah", 15000, 0, 255000], [4, "Belanja ATK Petugas Pantarlih", "Balpoin", 17, "Buah", 4000, 0, 68000], [4, "Belanja ATK Petugas Pantarlih", "Kertas HVS", 2, "Rim", 65500, 0, 131000], [5, "Pembuatan Seragam Panitia Inti Dan Tambahan", "Seragam Panitia & Pengawas", 16, "Op", 200000, 0, 3200000], [5, "Pembuatan Seragam Panitia Inti Dan Tambahan", "Seragam Panitia Tambahan + Pamsung", 17, "Op", 150000, 0, 2550000], [5, "Pembuatan Seragam Panitia Inti Dan Tambahan", "Topi", 33, "Op", 85000, 0, 2805000], [6, "Transportasi", "Transportasi Perjalanan Dinas", 6, "paket", 100000, 0, 600000], [6, "Dokumentasi Dan Pelaporan Kegiatan", "Fhoto Kegiatan", 1, "paket", 307000, 0, 307000], [6, "Dokumentasi Dan Pelaporan Kegiatan", "Vidio Kegiatan", 1, "paket", 250000, 0, 250000]];
+const CATS=["Honorarium & uang harian","Pembuatan TPS","Perlengkapan pemilihan","Konsumsi & rapat","ATK","Seragam panitia","Transportasi & dokumentasi"];
+const rp=n=>"Rp "+n.toLocaleString("id-ID");
+const $=id=>document.getElementById(id);
+const sum=a=>a.reduce((s,x)=>s+x[7],0);
+const T=sum(D);let sel=-1,term="";
+$("tot").textContent=rp(T);$("cnt").textContent=D.length+" butir rincian dalam "+CATS.length+" kelompok";
+const cs=CATS.map((_,i)=>sum(D.filter(x=>x[0]==i)));
+$("bar").innerHTML=cs.map((v,i)=>`<button style="width:${v/T*100}%;background:var(--c${i})" data-i="${i}" title="${CATS[i]}" aria-label="${CATS[i]}"></button>`).join("");
+$("cats").innerHTML=cs.map((v,i)=>`<li><button data-i="${i}"><span class="dot" style="background:var(--c${i})"></span><span>${CATS[i]}</span><b>${rp(v)}</b><span class="p">${(v/T*100).toFixed(1).replace(".",",")}%</span></button></li>`).join("");
+function draw(){
+ const t=term.toLowerCase();
+ const r=D.filter(x=>(sel<0||x[0]==sel)&&(!t||(x[2]+" "+x[1]).toLowerCase().includes(t)));
+ let h="",last="";
+ r.forEach(x=>{if(x[1]!=last){last=x[1];h+=`<tr class="g"><td colspan="3">${last}</td><td class="n">${rp(sum(r.filter(y=>y[1]==last)))}</td></tr>`}
+  h+=`<tr><td>${x[2]}</td><td class="n">${x[3]??""} ${x[4]??""}</td><td class="n">${rp(x[5])}</td><td class="n">${rp(x[7])}</td></tr>`});
+ $("tb").innerHTML=h||`<tr><td colspan="4" class="empty">Tidak ada rincian yang cocok. Ubah kata kunci atau pilih kelompok lain.</td></tr>`;
+ $("ft").textContent=rp(sum(r));
+ $("rs").hidden=sel<0&&!term;
+ document.querySelectorAll("[data-i]").forEach(b=>b.classList.toggle("on",+b.dataset.i==sel));
+}
+document.addEventListener("click",e=>{const b=e.target.closest("[data-i]");if(b){sel=sel==+b.dataset.i?-1:+b.dataset.i;draw();$("q").scrollIntoView({behavior:"smooth",block:"center"})}});
+$("q").oninput=e=>{term=e.target.value.trim();draw()};
+$("rs").onclick=()=>{sel=-1;term="";$("q").value="";draw()};
+draw();
+</script>
+</body>
+</html>
